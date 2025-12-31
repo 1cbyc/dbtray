@@ -30,9 +30,10 @@ export class SQLParser {
     this.parser = new Parser();
   }
 
-  parseCreateTable(sql: string): TableSchema | null {
+  parseCreateTable(_sql: string): TableSchema | null {
     try {
-      const ast = this.parser.astify(sql);
+      // TODO: Implement parsing for SQL
+      // const ast = this.parser.astify(sql);
       // Parse the AST to extract table schema
       // This is a simplified implementation
       return null; // TODO: Implement full parsing

@@ -4,14 +4,20 @@ export interface Node {
   y: number;
   width: number;
   height: number;
-  data: any;
+  data: {
+    name: string;
+    [key: string]: unknown;
+  };
 }
 
 export interface Edge {
   id: string;
   source: string;
   target: string;
-  data: any;
+  data: {
+    relationship?: string;
+    [key: string]: unknown;
+  };
 }
 
 export class GraphLayout {
