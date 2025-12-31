@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { Node, Edge } from '../lib/graph/layout';
 
@@ -9,10 +9,20 @@ interface ERDiagramProps {
   edges: Edge[];
   width?: number;
   height?: number;
+  onNodesChange?: (nodes: Node[]) => void;
+  onEdgesChange?: (edges: Edge[]) => void;
 }
 
-export default function ERDiagram({ nodes, edges, width = 800, height = 600 }: ERDiagramProps) {
+export default function ERDiagram({
+  nodes,
+  edges,
+  width = 800,
+  height = 600,
+  onNodesChange,
+  onEdgesChange
+}: ERDiagramProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [draggedNode, setDraggedNode] = useState<Node | null>(null);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -52,7 +62,27 @@ export default function ERDiagram({ nodes, edges, width = 800, height = 600 }: E
       .data(nodes)
       .enter()
       .append('g')
-      .attr('transform', d => `translate(${d.x - d.width / 2}, ${d.y - d.height / 2})`);
+      .attr('transform', d => `translate(${d.x - d.width / 2}, ${d.y - d.height / 2})`)
+      .call(d3.drag<SVGGElement, Node>()
+        .on('start', function(event, d) {
+          setDraggedNode(d);
+        })
+        .on('drag', function(event, d) {
+          d.x = event.x;
+          d.y = event.y;
+          d3.select(this).attr('transform', `translate(${d.x - d.width / 2}, ${d.y - d.height / 2})`);
+          // Update edges
+          svg.selectAll('line')
+            .attr('x1', (edge: Edge) => nodes.find(n => n.id === edge.source)?.x || 0)
+            .attr('y1', (edge: Edge) => nodes.find(n => n.id === edge.source)?.y || 0)
+            .attr('x2', (edge: Edge) => nodes.find(n => n.id === edge.target)?.x || 0)
+            .attr('y2', (edge: Edge) => nodes.find(n => n.id === edge.target)?.y || 0);
+        })
+        .on('end', function(event, d) {
+          setDraggedNode(null);
+          onNodesChange?.(nodes);
+        })
+      );
 
     // Table rectangles
     nodeGroups.append('rect')
@@ -71,7 +101,7 @@ export default function ERDiagram({ nodes, edges, width = 800, height = 600 }: E
       .attr('font-weight', 'bold')
       .text(d => d.data.name);
 
-  }, [nodes, edges]);
+  }, [nodes, edges, onNodesChange]);
 
   return (
     <div className="border rounded-lg p-4">
