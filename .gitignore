@@ -40,4 +40,5 @@ next-env.d.ts
 
 # 1cbyc
 *.md
+!README.md
 *.ps1
