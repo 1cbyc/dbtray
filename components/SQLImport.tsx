@@ -34,7 +34,7 @@ export default function SQLImport({ onTablesImported }: SQLImportProps) {
       }
 
       // Convert tables to nodes
-      const nodes: Node[] = data.tables.map((table: any, index: number) => ({
+      const nodes: Node[] = data.tables.map((table: { name: string }, index: number) => ({
         id: table.name,
         x: 100 + (index * 150),
         y: 150 + (index * 100),

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import ERDiagram from '../components/ERDiagram';
 import SQLImport from '../components/SQLImport';
-import MigrationGenerator from '../components\MigrationGenerator';
+import MigrationGenerator from '../components/MigrationGenerator';
 import { Node, Edge } from '../lib/graph/layout';
 import { TableSchema } from '../lib/parsers/sql-parser';
 

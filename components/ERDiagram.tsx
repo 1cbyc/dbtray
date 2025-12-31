@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { Node, Edge } from '../lib/graph/layout';
 
@@ -19,10 +19,9 @@ export default function ERDiagram({
   width = 800,
   height = 600,
   onNodesChange,
-  onEdgesChange
+  onEdgesChange: _onEdgesChange
 }: ERDiagramProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [draggedNode, setDraggedNode] = useState<Node | null>(null);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -64,22 +63,21 @@ export default function ERDiagram({
       .append('g')
       .attr('transform', d => `translate(${d.x - d.width / 2}, ${d.y - d.height / 2})`)
       .call(d3.drag<SVGGElement, Node>()
-        .on('start', function(event, d) {
-          setDraggedNode(d);
+        .on('start', function(_event, _d) {
+          // Drag started
         })
         .on('drag', function(event, d) {
           d.x = event.x;
           d.y = event.y;
           d3.select(this).attr('transform', `translate(${d.x - d.width / 2}, ${d.y - d.height / 2})`);
           // Update edges
-          svg.selectAll('line')
-            .attr('x1', (edge: Edge) => nodes.find(n => n.id === edge.source)?.x || 0)
-            .attr('y1', (edge: Edge) => nodes.find(n => n.id === edge.source)?.y || 0)
-            .attr('x2', (edge: Edge) => nodes.find(n => n.id === edge.target)?.x || 0)
-            .attr('y2', (edge: Edge) => nodes.find(n => n.id === edge.target)?.y || 0);
+          svg.selectAll<SVGLineElement, Edge>('line')
+            .attr('x1', edge => nodes.find(n => n.id === edge.source)?.x || 0)
+            .attr('y1', edge => nodes.find(n => n.id === edge.source)?.y || 0)
+            .attr('x2', edge => nodes.find(n => n.id === edge.target)?.x || 0)
+            .attr('y2', edge => nodes.find(n => n.id === edge.target)?.y || 0);
         })
-        .on('end', function(event, d) {
-          setDraggedNode(null);
+        .on('end', function(_event, _d) {
           onNodesChange?.(nodes);
         })
       );

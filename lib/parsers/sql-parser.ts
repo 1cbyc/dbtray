@@ -32,7 +32,7 @@ export class SQLParser {
 
   parseCreateTable(sql: string): TableSchema | null {
     try {
-      const ast = this.parser.astify(sql);
+      // const _ast = this.parser.astify(sql);
       // Simplified parsing - in a real implementation, you'd traverse the AST
       // For now, return a mock table
       if (sql.toUpperCase().includes('CREATE TABLE')) {
